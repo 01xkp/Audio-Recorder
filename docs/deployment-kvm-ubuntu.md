@@ -7,8 +7,8 @@ This browser-only application is deployed separately from Task-assignment.
 | VM | `192.168.122.243` (`huggingface-243`) |
 | Deployment user | `gutta` |
 | Application directory | `/home/gutta/audio-recorder` |
-| systemd service | `audio-recorder.service` |
-| HTTP port | `5175` |
+| systemd user service | `audio-recorder.service` |
+| HTTP port | `5177` |
 
 The service only serves the static site. Audio files and generated fragments remain in the visitor's browser and are never uploaded to the VM.
 
@@ -32,37 +32,21 @@ cd ~/audio-recorder
 npm ci
 npm run build
 npm test
-sudo tee /etc/systemd/system/audio-recorder.service >/dev/null <<'EOF'
-[Unit]
-Description=Audio Recorder Splitter
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=gutta
-WorkingDirectory=/home/gutta/audio-recorder
-Environment=NODE_ENV=production
-ExecStart=/usr/bin/npm start
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-sudo systemctl daemon-reload
-sudo systemctl enable --now audio-recorder.service
-sudo systemctl restart audio-recorder.service
+mkdir -p ~/.config/systemd/user
+install -m 644 deploy/audio-recorder.service ~/.config/systemd/user/audio-recorder.service
+systemctl --user daemon-reload
+systemctl --user enable --now audio-recorder.service
+systemctl --user restart audio-recorder.service
 rm ~/audio-recorder-release.tar
 ```
 
 ## Verification
 
 ```bash
-systemctl is-active audio-recorder.service
-curl --fail --silent --show-error --head http://127.0.0.1:5175/
-curl --fail --silent --show-error --head http://127.0.0.1:5175/ffmpeg/ffmpeg-core.js
-curl --fail --silent --show-error --head http://127.0.0.1:5175/ffmpeg/ffmpeg-core.wasm
+systemctl --user is-active audio-recorder.service
+curl --fail --silent --show-error --head http://127.0.0.1:5177/
+curl --fail --silent --show-error --head http://127.0.0.1:5177/ffmpeg/ffmpeg-core.js
+curl --fail --silent --show-error --head http://127.0.0.1:5177/ffmpeg/ffmpeg-core.wasm
 ```
 
-From the LAN, open `http://192.168.122.243:5175/`. Do not modify or restart `task-assignment.service` while deploying this application.
+From the LAN, open `http://192.168.122.243:5177/`. The user service is configured to persist after logout because `gutta` has systemd lingering enabled. Do not modify or restart `task-assignment.service` while deploying this application.
