@@ -1,18 +1,23 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Dependencies and tooling
+node_modules/
+.vite/
+coverage/
 
-# Other files and folders
-.settings/
+# Build output
+dist/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Generated local FFmpeg WebAssembly assets
+public/ffmpeg/ffmpeg-core.js
+public/ffmpeg/ffmpeg-core.wasm
+public/ffmpeg/LICENSE.ffmpeg-core
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
