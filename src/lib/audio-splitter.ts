@@ -1,5 +1,6 @@
 import { FFmpeg, FFFSType } from '@ffmpeg/ffmpeg';
 
+import { createJobId } from './job-id';
 import {
   createSegmentPlan,
   outputFileName,
@@ -51,7 +52,7 @@ export class LocalAudioSplitter {
       this.throwIfCancelled(generation);
 
       const plan = createSegmentPlan(settings);
-      const jobId = crypto.randomUUID().replaceAll('-', '');
+      const jobId = createJobId();
       inputDirectory = `/input-${jobId}`;
       const inputName = `source${fileExtension(file.name)}`;
       const inputPath = `${inputDirectory}/${inputName}`;
